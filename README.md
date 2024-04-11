@@ -4,6 +4,10 @@
 start from 03/30/2024
 ./MP1_Implement -e ../test_data/mp01/0/output.raw -i ../test_data/mp01/0/input0.raw,../test_data/mp01/0/input1.raw -o ../test_data/mp01/0/res.raw -t vector 
 
+Half finished in 4/11/2024. 
+
+:small_airplane:
+
 ### MP2
 
 
