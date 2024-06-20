@@ -8,6 +8,12 @@ Half finished in 4/11/2024.
 
 :small_airplane:
 
+Already finished MP1 during my internship at Tencent. 6/20/2024 
+
+:running_man:
+
+
+
 ### MP2
 
 
