@@ -2,7 +2,7 @@
 
 ### MP1
 start from 03/30/2024
-./MP1_Implement -e ../test_data/mp01/0/output.raw -i ../test_data/mp01/0/input0.raw,../test_data/mp01/0/input1.raw -o ../test_data/mp01/0/res.raw -t vector 
+./MP1_Template -e ../test_data/mp01/0/output.raw -i ../test_data/mp01/0/input0.raw,../test_data/mp01/0/input1.raw -o ../test_data/mp01/0/res.raw -t vector 
 
 Half finished in 4/11/2024. 
 
@@ -13,9 +13,9 @@ Already finished MP1 during my internship at Tencent. 6/20/2024
 :running_man:
 
 
-
 ### MP2
-
+Start from 06/27/2024
+./MP2_Template -e ../test_data/mp02/0/output.raw -i ../test_data/mp02/0/input0.raw,../test_data/mp02/0/input1.raw -o ../test_data/mp02/0/res.raw -t vector 
 
 
 ### MP3
