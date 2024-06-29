@@ -276,7 +276,7 @@ for i M_row		：对于结果中的第i行
 
 ![image-20240622163927698](./pictures/image-20240622163927698.png)
 
-结果P是2D的，我们也使用2D的thread来运算。将P分成多个Tiles，每一个Tile被一个Block计算。创建[ceil(Width/Tile_width)]**2个block来运算。
+计算结果P是2D的，我们也使用2D的thread来运算。将P分成多个Tiles，每一个Tile被一个Block计算。创建[ceil(Width/Tile_width)]**2个block来运算。
 
 ![image-20240622163918109](./pictures/image-20240622163918109.png)
 
