@@ -1,4 +1,5 @@
 #include    <wb.h>
+#include <cmath>
 
 #define wbCheck(stmt) do {                                 \
         cudaError_t err = stmt;                            \
@@ -8,6 +9,8 @@
         }                                                  \
     } while(0)
 
+#define BLOCK_WIDTH 16
+
 // Compute C = A * B
 __global__ void matrixMultiplyShared(float * A, float * B, float * C,
 			             int numARows, int numAColumns,
@@ -15,6 +18,46 @@ __global__ void matrixMultiplyShared(float * A, float * B, float * C,
 			             int numCRows, int numCColumns) {
     //@@ Insert code to implement matrix multiplication here
     //@@ You have to use shared memory for this MP
+
+    // init Shared Memory
+    __shared__ float subTiledA[BLOCK_WIDTH][BLOCK_WIDTH];
+    __shared__ float subTiledB[BLOCK_WIDTH][BLOCK_WIDTH];
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    int loop_num = ceil((float)numAColumns/BLOCK_WIDTH);
+    float result = 0;
+    // loop throught the line
+    printf("2");
+    for(int i=0;i<loop_num;i++){
+        // load data from two matrix.
+        int A_row = row;
+        int A_col = i * BLOCK_WIDTH + threadIdx.x;
+        int B_row = i * BLOCK_WIDTH + threadIdx.y;
+        int B_col = col;
+        if( A_col < numAColumns){
+            subTiledA[threadIdx.y][threadIdx.x] = A[A_row * numAColumns + A_col];
+        }
+        else{
+            subTiledA[threadIdx.y][threadIdx.x] = 0;
+        }
+        if(B_row < numBRows){
+            subTiledA[threadIdx.y][threadIdx.x] = B[B_row * numBColumns + B_col];
+        }
+        else{
+            subTiledA[threadIdx.y][threadIdx.x] = 0;
+        }
+        __syncthreads();
+        // compute partial sum of current Tile
+        for(int k=0;k<BLOCK_WIDTH;k++){
+            result += subTiledA[threadIdx.y][k] * subTiledB[k][threadIdx.x];
+        }
+        __syncthreads();
+    }
+
+    if(row < numCRows && col < numCColumns){
+        C[row * numCColumns + col] = result;
+    }
 }
 
 int main(int argc, char ** argv) {
@@ -38,40 +81,46 @@ int main(int argc, char ** argv) {
     hostA = (float *) wbImport(wbArg_getInputFile(args, 0), &numARows, &numAColumns);
     hostB = (float *) wbImport(wbArg_getInputFile(args, 1), &numBRows, &numBColumns);
     //@@ Set numCRows and numCColumns
-    numCRows = 0;
-    numCColumns = 0;
+    numCRows = numARows;
+    numCColumns = numBColumns;
     //@@ Allocate the hostC matrix
     wbTime_stop(Generic, "Importing data and creating memory on host");
 
     wbLog(TRACE, "The dimensions of A are ", numARows, " x ", numAColumns);
     wbLog(TRACE, "The dimensions of B are ", numBRows, " x ", numBColumns);
-
+ 
     wbTime_start(GPU, "Allocating GPU memory.");
     //@@ Allocate GPU memory here
-
+    cudaMalloc((void **) &deviceA, sizeof(float) * numARows * numAColumns);
+    cudaMalloc((void **) &deviceB, sizeof(float) * numBRows * numBColumns);
+    cudaMalloc((void **) &deviceC, sizeof(float) * numCRows * numCColumns);
     wbTime_stop(GPU, "Allocating GPU memory.");
 
     wbTime_start(GPU, "Copying input memory to the GPU.");
     //@@ Copy memory to the GPU here
-
+    cudaMemcpy(deviceA, hostA, sizeof(float) * numARows * numAColumns,cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceB, hostB, sizeof(float) * numBRows * numBColumns,cudaMemcpyHostToDevice);
     wbTime_stop(GPU, "Copying input memory to the GPU.");
     
     //@@ Initialize the grid and block dimensions here
-    
+    dim3 DimGrid(ceil((float)numCRows/BLOCK_WIDTH),ceil((float)numCColumns/BLOCK_WIDTH),1);
+    dim3 DimBlock(BLOCK_WIDTH,BLOCK_WIDTH,1);
     wbTime_start(Compute, "Performing CUDA computation");
     //@@ Launch the GPU Kernel here
-
+    matrixMultiplyShared<<<DimGrid, DimBlock>>>(deviceA, deviceB, deviceC, numARows, numAColumns, numBRows, numBColumns, numCRows, numCColumns);
     cudaThreadSynchronize();
     wbTime_stop(Compute, "Performing CUDA computation");
     
     wbTime_start(Copy, "Copying output memory to the CPU");
     //@@ Copy the GPU memory back to the CPU here
-
+    cudaMemcpy(hostC, deviceC, sizeof(float) * numCRows * numCColumns,cudaMemcpyDeviceToHost);
     wbTime_stop(Copy, "Copying output memory to the CPU");
 
     wbTime_start(GPU, "Freeing GPU Memory");
     //@@ Free the GPU memory here
-
+    cudaFree(deviceA);
+    cudaFree(deviceB);
+    cudaFree(deviceC);
     wbTime_stop(GPU, "Freeing GPU Memory");
 
     wbSolution(args, hostC, numCRows, numCColumns);

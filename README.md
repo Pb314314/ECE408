@@ -15,10 +15,24 @@ Already finished MP1 during my internship at Tencent. 6/20/2024
 
 ### MP2
 Start from 06/27/2024
-./MP2_Template -e ../test_data/mp02/0/output.raw -i ../test_data/mp02/0/input0.raw,../test_data/mp02/0/input1.raw -o ../test_data/mp02/0/res.raw -t vector 
+
+./MP2_Template -e ../test_data/mp02/0/output.raw -i ../test_data/mp02/0/input0.raw,../test_data/mp02/0/input1.raw -o ../test_data/mp02/0/res.raw -t matrix 
 
 
+Finished MP2 on 7-29.
+I learned how to write simple MM on cuda.
 ### MP3
+Start MP3 on 07/01/2024
+The command to run the code:
+
+./MP3_Template -e ../test_data/mp03/0/output.raw -i ../test_data/mp03/0/input0.raw,../test_data/mp03/0/input1.raw -o ../test_data/mp03/0/res.raw -t matrix 
+
+The difference between __syncthreads and cudaThreadSynchronize().
+
+__syncthreads is used within cuda kernel. It ensures all threads within a block have reached the same point in the kernel.(when copy to shared memory)
+
+cudaThreadSynchronize() is a host level function that is called from CPU side. It is used to synchronize the CPU with the GPU, ensuring that all previously issued CUDA commands have completed before the CPU continues executing.
+
 ### MP4
 
 ### MP5
