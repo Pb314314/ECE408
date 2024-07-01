@@ -1,6 +1,6 @@
 # ECE408:
 
-## Lecture2:
+## Lecture2: GPU的基础层次结构介绍
 
 ![image-20240617232804716](./pictures/image-20240617232804716.png)
 
@@ -88,7 +88,7 @@ x，y，z的block个数。（并不一定用三个dim，可以set为1）
 
 
 
-## Lecture3:
+## Lecture3: CUDA编程 & 向量加法
 
 ### 对于一维的复习
 
@@ -174,7 +174,7 @@ warp之间没有priority。
 
 
 
-## Lecture4 Memory Model
+## Lecture4  Memory Model & 基础矩阵乘法
 
 ![image-20240622150728579](./pictures/image-20240622150728579.png)
 
@@ -502,7 +502,7 @@ M和N中的每一个数字，总共需要进行4次的运算。
 
 
 
-## Lecture6
+## Lecture6——Shared Memory & Tiled MM
 
 ![image-20240623152742557](./pictures/image-20240623152742557.png)
 
@@ -693,7 +693,9 @@ Burst是对于DRAM的optimization，based on spatial locality。
 
 因为M矩阵的这个问题，我们想要使Tiled matrix multiplication能够coalescing。
 
-## Lecture7
+## Lecture7 Convolution & Constant Memory & Cache
+
+这节课我们学习了卷积运算，认识了Constant Memory，Cache。
 
 ### 1D和2D的的卷积运算
 
